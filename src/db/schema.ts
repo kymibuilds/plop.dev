@@ -44,4 +44,21 @@ export const products = pgTable("products", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const blogs = pgTable("blogs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull(), // URL friendly identifier
+  description: text("description"), // Short summary
+  content: text("content"), // Markdown content
+  published: boolean("published").default(false).notNull(),
+  views: integer("views").default(0).notNull(),
+  isExternal: boolean("is_external").default(false).notNull(),
+  externalUrl: text("external_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+
+
 

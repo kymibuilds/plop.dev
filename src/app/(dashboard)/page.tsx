@@ -16,6 +16,15 @@ type Product = {
   isActive: boolean;
 };
 
+type Blog = {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  isExternal?: boolean;
+  externalUrl?: string | null;
+};
+
 export default function MyPage() {
   const [features, setFeatures] = useState<FeatureConfig>({
     links: true,
@@ -26,6 +35,7 @@ export default function MyPage() {
 
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
 
   // Fetch data on mount
   useEffect(() => {
@@ -38,17 +48,16 @@ export default function MyPage() {
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch(console.error);
+
+    fetch("/api/blogs")
+      .then((res) => res.json())
+      .then((data) => setBlogs(data))
+      .catch(console.error);
   }, []);
 
-  // Mock data (blogs remain mock for now)
-  const blogs = [
-    "building a minimal saas with next.js",
-    "why text-first uis scale better",
-    "auth patterns that don't suck",
-  ];
-
-  // Filter to only active products
+  // Filter to only active items
   const activeProducts = products.filter((p) => p.isActive);
+  const publishedBlogs = blogs.filter((b) => b.published);
 
   return (
     <main className="w-full min-h-screen flex justify-center px-6 py-16">
@@ -86,15 +95,28 @@ export default function MyPage() {
         )}
 
         {/* Blogs */}
-        {features.blogs && (
+        {features.blogs && publishedBlogs.length > 0 && (
           <section className="flex flex-col gap-4 items-center">
             <h2 className="mono text-xs text-muted-foreground">［ blogs ］</h2>
             <div className="flex flex-col gap-2">
-              {blogs.map((blog) => (
-                <a key={blog} className="hover:underline">
-                  {blog}
-                </a>
-              ))}
+              {publishedBlogs.map((blog) => {
+                 const isExternal = blog.isExternal;
+                 const href = isExternal ? blog.externalUrl || "#" : `/blog/${blog.slug}`;
+                 const target = isExternal ? "_blank" : undefined;
+                 
+                 return (
+                  <a 
+                    key={blog.id} 
+                    href={href}
+                    target={target}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    className="hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    {blog.title}
+                    {isExternal && <span className="text-[9px] -mt-1">↗</span>}
+                  </a>
+                );
+              })}
             </div>
           </section>
         )}
