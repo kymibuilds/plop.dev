@@ -42,14 +42,14 @@ export function CenteredLayout({ children }: { children: React.ReactNode }) {
 
       {/* ================= Row 1 (Top Ext) ================= */}
       <div />
-      <TrackCell borders="border-l border-r border-border" /> {/* Vertical Ext */}
+      <TrackCell borders="border-l border-r border-border" pattern /> {/* Vertical Ext */}
       <div />
-      <TrackCell borders="border-l border-r border-border" /> {/* Vertical Ext */}
+      <TrackCell borders="border-l border-r border-border" pattern /> {/* Vertical Ext */}
       <div />
 
       {/* ================= Row 2 (Top Tracks) ================= */}
       {/* 1: Left Ext (Horizontal) */}
-      <TrackCell borders="border-t border-b border-border" />
+      <TrackCell borders="border-t border-b border-border" pattern />
 
       {/* 2: Top Left Corner */}
       <TrackCell borders="border-t border-b border-l border-r border-border" />
@@ -61,7 +61,7 @@ export function CenteredLayout({ children }: { children: React.ReactNode }) {
       <TrackCell borders="border-t border-b border-l border-r border-border" />
 
       {/* 5: Right Ext (Horizontal) */}
-      <TrackCell borders="border-t border-b border-border" />
+      <TrackCell borders="border-t border-b border-border" pattern />
 
       {/* ================= Row 3 (Main Content) ================= */}
       <div />
@@ -70,7 +70,7 @@ export function CenteredLayout({ children }: { children: React.ReactNode }) {
       <TrackCell borders="border-l border-r border-border" pattern />
 
       {/* 3: Content Area */}
-      <div className="flex flex-col items-center justify-center p-8 bg-card/50 backdrop-blur-sm z-10">
+      <div className="flex flex-col items-center justify-center p-6 bg-card/50 backdrop-blur-sm z-10 w-full min-h-[340px]">
         {children}
       </div>
 
@@ -81,7 +81,7 @@ export function CenteredLayout({ children }: { children: React.ReactNode }) {
 
       {/* ================= Row 4 (Bottom Tracks) ================= */}
       {/* 1: Left Ext */}
-      <TrackCell borders="border-t border-b border-border" />
+      <TrackCell borders="border-t border-b border-border" pattern />
 
       {/* 2: Bottom Left Corner */}
       <TrackCell borders="border-t border-b border-l border-r border-border" />
@@ -93,13 +93,13 @@ export function CenteredLayout({ children }: { children: React.ReactNode }) {
       <TrackCell borders="border-t border-b border-l border-r border-border" />
 
       {/* 5: Right Ext */}
-      <TrackCell borders="border-t border-b border-border" />
+      <TrackCell borders="border-t border-b border-border" pattern />
 
       {/* ================= Row 5 (Bottom Ext) ================= */}
       <div />
-      <TrackCell borders="border-l border-r border-border" /> {/* Vertical Ext */}
+      <TrackCell borders="border-l border-r border-border" pattern /> {/* Vertical Ext */}
       <div />
-      <TrackCell borders="border-l border-r border-border" /> {/* Vertical Ext */}
+      <TrackCell borders="border-l border-r border-border" pattern /> {/* Vertical Ext */}
       <div />
     </div>
   );

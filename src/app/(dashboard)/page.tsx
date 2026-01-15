@@ -1,9 +1,21 @@
 "use client";
+import { FeatureConfig, ToggleBar } from "./_components/toggle-bar";
+import { useState } from "react";
 
 export default function MyPage() {
+  const [features, setFeatures] = useState<FeatureConfig>({
+    links: true,
+    blogs: false,
+    products: false,
+  });
   return (
     <main className="w-full min-h-screen flex justify-center px-6 py-16">
+      <div className="w-full max-w-md fixed top-4">
+        <ToggleBar value={features} onChange={setFeatures} />
+      </div>
+      
       <div className="w-full max-w-md flex flex-col gap-10 text-sm">
+
         {/* Header */}
         <div className="flex flex-col gap-1">
           <h1 className="text-lg font-normal">[nyahh]</h1>

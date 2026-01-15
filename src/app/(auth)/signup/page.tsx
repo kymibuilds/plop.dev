@@ -45,14 +45,14 @@ export default function SignupPage() {
 
   return (
     <CenteredLayout>
-      <div className="w-full max-w-md flex flex-col gap-6 text-sm">
+      <div className="w-full max-w-md flex flex-col gap-4 text-sm">
         {/* title */}
         <h1 className="text-lg font-medium text-center">
           create account
         </h1>
 
         {/* form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* email */}
           <div className="flex items-center gap-2">
             <span className="w-20 text-muted-foreground">

@@ -44,19 +44,14 @@ export default function LoginPage() {
 
   return (
     <CenteredLayout>
-      <div className="w-full max-w-md flex flex-col gap-6 text-sm">
+      <div className="w-full max-w-md flex flex-col gap-4 text-sm">
         {/* title */}
-        <div className="flex flex-col gap-1 text-center">
-          <h1 className="text-lg font-medium">
-            sign in
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            welcome back to sproink
-          </p>
-        </div>
+        <h1 className="text-lg font-medium text-center">
+          sign in
+        </h1>
 
         {/* form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* identifier */}
           <div className="flex items-center gap-2">
             <span className="w-24 text-muted-foreground">
