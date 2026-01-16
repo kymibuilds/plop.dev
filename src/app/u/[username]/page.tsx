@@ -57,7 +57,15 @@ export default async function PublicProfilePage({ params }: Props) {
   ]);
 
   return (
-    <div className="w-full min-h-screen flex justify-center px-6 py-16">
+    <div className="w-full min-h-screen flex justify-center px-6 py-16 relative">
+      {/* Promo Banner */}
+      <a 
+        href="https://plob.dev/signup"
+        className="fixed top-4 left-4 text-[10px] mono text-muted-foreground hover:text-foreground transition-colors z-50"
+      >
+        claim your plob.dev →
+      </a>
+
       <div className="w-full max-w-lg flex flex-col gap-10 text-sm text-center items-center">
         {/* Header */}
         <div className="flex flex-col gap-1">
