@@ -4,6 +4,7 @@ import "./globals.css";
 import { KeyboardProvider } from "@/components/keyboard-provider";
 import { CommandPalette } from "@/components/command-palette";
 import { KeyboardHelp } from "@/components/keyboard-help";
+import { Analytics } from "@vercel/analytics/next"
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         <KeyboardProvider>
           {children}
+          <Analytics />
           <CommandPalette />
           <KeyboardHelp />
         </KeyboardProvider>
