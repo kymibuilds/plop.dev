@@ -168,7 +168,7 @@ export default async function PublicProfilePage({ params }: Props) {
         {showBlogs && userBlogs.length > 0 && (
           <section className="flex flex-col gap-4 items-center">
             <h2 className="mono text-xs text-muted-foreground">［ blogs ］</h2>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 items-center">
               {userBlogs.map((blog) => {
                 const isExternal = blog.isExternal;
                 const href = isExternal
@@ -182,10 +182,15 @@ export default async function PublicProfilePage({ params }: Props) {
                     href={href}
                     target={target}
                     rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="hover:underline cursor-pointer flex items-center gap-1"
+                    className="group flex items-center gap-2 hover:underline cursor-pointer transition-all"
                   >
-                    {blog.title}
-                    {isExternal && <span className="text-[9px] -mt-1">↗</span>}
+                    <span className="text-muted-foreground text-xs">•</span>
+                    <span>{blog.title}</span>
+                    {isExternal ? (
+                      <span className="text-[9px] text-muted-foreground -mt-1">↗</span>
+                    ) : (
+                      <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs">→</span>
+                    )}
                   </a>
                 );
               })}
