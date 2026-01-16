@@ -36,12 +36,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Name and URL are required" }, { status: 400 });
   }
 
+  // Normalize URL: add https:// if no protocol is present
+  let normalizedUrl = url.trim();
+  if (!normalizedUrl.startsWith("http://") && !normalizedUrl.startsWith("https://")) {
+    normalizedUrl = `https://${normalizedUrl}`;
+  }
+
   const [newLink] = await db
     .insert(links)
     .values({
       userId: user.id,
       name,
-      url,
+      url: normalizedUrl,
     })
     .returning();
 

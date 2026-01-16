@@ -19,9 +19,15 @@ export async function PUT(
   const body = await request.json();
   const { name, url } = body;
 
+  // Normalize URL: add https:// if no protocol is present
+  let normalizedUrl = url?.trim() || "";
+  if (normalizedUrl && !normalizedUrl.startsWith("http://") && !normalizedUrl.startsWith("https://")) {
+    normalizedUrl = `https://${normalizedUrl}`;
+  }
+
   const [updated] = await db
     .update(links)
-    .set({ name, url })
+    .set({ name, url: normalizedUrl })
     .where(and(eq(links.id, id), eq(links.userId, user.id)))
     .returning();
 
