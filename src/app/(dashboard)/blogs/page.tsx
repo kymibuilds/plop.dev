@@ -191,7 +191,11 @@ export default function BlogsPage() {
       const slug = newTitle
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
+        .replace(/-+/g, "-")
+        .replace(/(^-|-$)+/g, "")
+        .split("-")
+        .slice(0, 8)
+        .join("-");
       setNewSlug(slug);
     }
   }, [newTitle, isAdding, addMode]);
