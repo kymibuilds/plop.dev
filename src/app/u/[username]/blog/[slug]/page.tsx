@@ -74,8 +74,13 @@ export default function UserBlogPage() {
   return (
     <main 
       className={`min-h-screen w-full transition-colors duration-500 ease-in-out ${
-        isReadingMode ? "bg-[#111111] text-[#d4d4d4]" : "bg-background text-foreground"
+        isReadingMode ? "bg-[#111111]" : "bg-background"
       }`}
+      style={isReadingMode ? {
+        // @ts-ignore
+        "--foreground": "#d4d4d4",
+        "--muted-foreground": "#888888"
+      } : undefined}
     >
       {/* Main Content Container with Borders */}
       <div className="max-w-4xl mx-auto min-h-screen flex">
@@ -119,7 +124,7 @@ export default function UserBlogPage() {
             <a 
               href={`/u/${username}`}
               className={`text-xs mono mb-6 inline-block hover:underline transition-colors ${
-                isReadingMode ? "text-[#666] hover:text-[#888]" : "text-muted-foreground hover:text-foreground"
+                isReadingMode ? "text-[#888] hover:text-[#d4d4d4]" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               ← {username}
@@ -135,7 +140,7 @@ export default function UserBlogPage() {
           </header>
 
           {/* Content */}
-          <div className={`${isReadingMode ? "prose-invert prose-neutral" : ""} prose prose-sm md:prose-base max-w-none`}>
+          <div className="prose prose-sm md:prose-base max-w-none">
             <MarkdownPreview content={blog.content || ""} />
           </div>
         </article>
