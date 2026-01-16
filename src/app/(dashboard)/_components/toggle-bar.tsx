@@ -7,12 +7,16 @@ type Feature = "links" | "blogs" | "products" | "integrations";
 
 export type FeatureConfig = Record<Feature, boolean>;
 
+export type LinksLayout = "horizontal" | "vertical";
+
 type Props = {
   value: FeatureConfig;
   onChange: (next: FeatureConfig) => void;
+  linksLayout: LinksLayout;
+  onLinksLayoutChange: (layout: LinksLayout) => void;
 };
 
-export function ToggleBar({ value, onChange }: Props) {
+export function ToggleBar({ value, onChange, linksLayout, onLinksLayoutChange }: Props) {
   const [showColors, setShowColors] = useState(false);
 
   const toggle = (key: Feature) => {
@@ -20,6 +24,10 @@ export function ToggleBar({ value, onChange }: Props) {
       ...value,
       [key]: !value[key],
     });
+  };
+
+  const toggleLayout = () => {
+    onLinksLayoutChange(linksLayout === "horizontal" ? "vertical" : "horizontal");
   };
 
   const base = "text-xs font-mono transition-all";
@@ -42,17 +50,29 @@ export function ToggleBar({ value, onChange }: Props) {
         ))}
       </div>
 
-      {/* Colors Button */}
-      <button
-        onClick={() => setShowColors(!showColors)}
-        className={`${base} ${showColors ? active : inactive}`}
-      >
-        colors
-      </button>
+      <div className="flex gap-2 md:gap-4">
+        {/* Layout Toggle - only show if links are enabled */}
+        {value.links && (
+          <button
+            onClick={toggleLayout}
+            className={`${base} ${inactive}`}
+            title="Toggle links layout"
+          >
+            {linksLayout === "horizontal" ? "→" : "↓"}
+          </button>
+        )}
+
+        {/* Colors Button */}
+        <button
+          onClick={() => setShowColors(!showColors)}
+          className={`${base} ${showColors ? active : inactive}`}
+        >
+          colors
+        </button>
+      </div>
 
       {/* Color Picker Popup */}
       <ColorPicker isOpen={showColors} onClose={() => setShowColors(false)} />
     </div>
   );
 }
-

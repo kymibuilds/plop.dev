@@ -22,6 +22,7 @@ export async function GET() {
       showBlogs: true,
       showProducts: true,
       showIntegrations: true,
+      linksLayout: "horizontal",
     });
   }
 
@@ -30,6 +31,7 @@ export async function GET() {
     showBlogs: settings.showBlogs,
     showProducts: settings.showProducts,
     showIntegrations: settings.showIntegrations,
+    linksLayout: settings.linksLayout,
   });
 }
 
@@ -41,7 +43,7 @@ export async function PATCH(request: Request) {
   }
 
   const body = await request.json();
-  const { showLinks, showBlogs, showProducts, showIntegrations } = body;
+  const { showLinks, showBlogs, showProducts, showIntegrations, linksLayout } = body;
 
   // Upsert settings
   const existing = await db.query.userSettings.findFirst({
@@ -56,6 +58,7 @@ export async function PATCH(request: Request) {
         showBlogs: showBlogs ?? existing.showBlogs,
         showProducts: showProducts ?? existing.showProducts,
         showIntegrations: showIntegrations ?? existing.showIntegrations,
+        linksLayout: linksLayout ?? existing.linksLayout,
         updatedAt: new Date(),
       })
       .where(eq(userSettings.userId, user.id));
@@ -66,6 +69,7 @@ export async function PATCH(request: Request) {
       showBlogs: showBlogs ?? true,
       showProducts: showProducts ?? true,
       showIntegrations: showIntegrations ?? true,
+      linksLayout: linksLayout ?? "horizontal",
     });
   }
 

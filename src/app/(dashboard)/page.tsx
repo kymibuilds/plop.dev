@@ -1,5 +1,5 @@
 "use client";
-import { FeatureConfig, ToggleBar } from "./_components/toggle-bar";
+import { FeatureConfig, LinksLayout, ToggleBar } from "./_components/toggle-bar";
 import { useState, useEffect } from "react";
 
 type LinkItem = {
@@ -37,6 +37,7 @@ export default function MyPage() {
     products: true,
     integrations: true,
   });
+  const [linksLayout, setLinksLayout] = useState<LinksLayout>("horizontal");
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   const [links, setLinks] = useState<LinkItem[]>([]);
@@ -66,6 +67,7 @@ export default function MyPage() {
           products: data.showProducts ?? true,
           integrations: data.showIntegrations ?? true,
         });
+        setLinksLayout(data.linksLayout ?? "horizontal");
         setSettingsLoaded(true);
       })
       .catch(console.error);
@@ -90,20 +92,36 @@ export default function MyPage() {
   // Save settings when features change (but not on initial load)
   const handleFeaturesChange = (newFeatures: FeatureConfig) => {
     setFeatures(newFeatures);
+    saveSettings({ features: newFeatures });
+  };
 
+  const handleLinksLayoutChange = (newLayout: LinksLayout) => {
+    setLinksLayout(newLayout);
+    saveSettings({ linksLayout: newLayout });
+  };
+
+  const saveSettings = (updates: { features?: FeatureConfig; linksLayout?: LinksLayout }) => {
     // Only save if settings have been loaded (avoid saving default state)
-    if (settingsLoaded) {
-      fetch("/api/settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          showLinks: newFeatures.links,
-          showBlogs: newFeatures.blogs,
-          showProducts: newFeatures.products,
-          showIntegrations: newFeatures.integrations,
-        }),
-      }).catch(console.error);
+    if (!settingsLoaded) return;
+
+    const payload: Record<string, unknown> = {};
+    
+    if (updates.features) {
+      payload.showLinks = updates.features.links;
+      payload.showBlogs = updates.features.blogs;
+      payload.showProducts = updates.features.products;
+      payload.showIntegrations = updates.features.integrations;
     }
+    
+    if (updates.linksLayout) {
+      payload.linksLayout = updates.linksLayout;
+    }
+
+    fetch("/api/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(console.error);
   };
 
   // Filter to only active items
@@ -116,7 +134,12 @@ export default function MyPage() {
     <div className="w-full min-h-screen flex justify-center px-6 pt-24 pb-16 md:py-16">
 
       <div className="w-full max-w-lg fixed top-14 md:top-6 left-1/2 -translate-x-1/2 px-6 z-40">
-        <ToggleBar value={features} onChange={handleFeaturesChange} />
+        <ToggleBar 
+          value={features} 
+          onChange={handleFeaturesChange}
+          linksLayout={linksLayout}
+          onLinksLayoutChange={handleLinksLayoutChange}
+        />
       </div>
 
       
@@ -139,16 +162,32 @@ export default function MyPage() {
         {features.links && links.length > 0 && (
           <section className="flex flex-col gap-4 items-center">
             <h2 className="mono text-xs text-muted-foreground">［ links ］</h2>
-            <div className="text-center max-w-xs leading-relaxed">
-              {links.map((link, i) => (
-                <span key={link.id}>
-                  {i > 0 && <span className="text-muted-foreground mx-2">•</span>}
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline cursor-pointer">
+            {linksLayout === "horizontal" ? (
+              <div className="text-center max-w-xs leading-relaxed">
+                {links.map((link, i) => (
+                  <span key={link.id}>
+                    {i > 0 && <span className="text-muted-foreground mx-2">•</span>}
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline cursor-pointer">
+                      {link.name}
+                    </a>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {links.map((link) => (
+                  <a 
+                    key={link.id}
+                    href={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:underline cursor-pointer"
+                  >
                     {link.name}
                   </a>
-                </span>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

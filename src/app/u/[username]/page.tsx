@@ -32,6 +32,7 @@ export default async function PublicProfilePage({ params }: Props) {
   const showLinks = settings?.showLinks ?? true;
   const showBlogs = settings?.showBlogs ?? true;
   const showProducts = settings?.showProducts ?? true;
+  const linksLayout = settings?.linksLayout ?? "horizontal";
 
   // Fetch content based on settings
   const [userLinks, userBlogs, userProducts] = await Promise.all([
@@ -75,11 +76,27 @@ export default async function PublicProfilePage({ params }: Props) {
         {showLinks && userLinks.length > 0 && (
           <section className="flex flex-col gap-4 items-center">
             <h2 className="mono text-xs text-muted-foreground">［ links ］</h2>
-            <div className="text-center max-w-xs leading-relaxed">
-              {userLinks.map((link, i) => (
-                <span key={link.id}>
-                  {i > 0 && <span className="text-muted-foreground mx-2">•</span>}
+            {linksLayout === "horizontal" ? (
+              <div className="text-center max-w-xs leading-relaxed">
+                {userLinks.map((link, i) => (
+                  <span key={link.id}>
+                    {i > 0 && <span className="text-muted-foreground mx-2">•</span>}
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline cursor-pointer"
+                    >
+                      {link.name}
+                    </a>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {userLinks.map((link) => (
                   <a
+                    key={link.id}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -87,9 +104,9 @@ export default async function PublicProfilePage({ params }: Props) {
                   >
                     {link.name}
                   </a>
-                </span>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

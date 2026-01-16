@@ -24,6 +24,7 @@ export const userSettings = pgTable("user_settings", {
   showBlogs: boolean("show_blogs").default(true).notNull(),
   showProducts: boolean("show_products").default(true).notNull(),
   showIntegrations: boolean("show_integrations").default(true).notNull(),
+  linksLayout: text("links_layout").default("horizontal").notNull(), // "horizontal" or "vertical"
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 

@@ -36,6 +36,8 @@ export async function GET(
       showBlogs: settings?.showBlogs ?? true,
       showProducts: settings?.showProducts ?? true,
       showIntegrations: settings?.showIntegrations ?? true,
+      linksLayout: settings?.linksLayout ?? "horizontal",
     },
   });
 }
+
