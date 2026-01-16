@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { MarkdownPreview } from "@/app/(dashboard)/_components/markdown-preview";
+import { Sun, Moon } from "lucide-react";
 
 type Blog = {
   id: string;
@@ -73,22 +74,9 @@ export default function UserBlogPage() {
   return (
     <main 
       className={`min-h-screen w-full transition-colors duration-500 ease-in-out ${
-        isReadingMode ? "bg-[#111111] text-[#a1a1aa]" : "bg-background text-foreground"
+        isReadingMode ? "bg-[#111111] text-[#d4d4d4]" : "bg-background text-foreground"
       }`}
     >
-      {/* Toggle Button */}
-      <button
-        onClick={toggleReadingMode}
-        className="fixed top-6 right-6 z-50 p-2 rounded-full hover:bg-muted/20 transition-colors"
-        title={isReadingMode ? "Switch to Default" : "Soft Reading Mode"}
-      >
-        {isReadingMode ? (
-          <span className="text-lg">☀</span>
-        ) : (
-          <span className="text-lg opacity-50 hover:opacity-100">☾</span>
-        )}
-      </button>
-
       {/* Main Content Container with Borders */}
       <div className="max-w-4xl mx-auto min-h-screen flex">
         
@@ -107,7 +95,25 @@ export default function UserBlogPage() {
           }
         />
 
-        <article className={`flex-1 px-6 md:px-12 py-16 max-w-2xl mx-auto transition-opacity duration-500 ${isReadingMode ? "opacity-90" : "opacity-100"}`}>
+        <article className={`relative flex-1 px-6 md:px-12 py-16 max-w-2xl mx-auto transition-opacity duration-500 ${isReadingMode ? "opacity-100" : "opacity-100"}`}>
+          
+          {/* Toggle Button (Inside Content) */}
+          <button
+            onClick={toggleReadingMode}
+            className={`absolute top-16 right-6 md:right-12 p-2 rounded-full transition-colors ${
+              isReadingMode 
+                ? "text-[#666] hover:text-[#d4d4d4] hover:bg-[#222]" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+            title={isReadingMode ? "Switch to Default" : "Soft Reading Mode"}
+          >
+            {isReadingMode ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
+          </button>
+
           {/* Header */}
           <header className="mb-12">
             <a 
@@ -118,7 +124,7 @@ export default function UserBlogPage() {
             >
               ← {username}
             </a>
-            <h1 className={`text-3xl md:text-4xl font-medium mb-4 leading-tight ${isReadingMode ? "text-[#e5e5e5]" : ""}`}>
+            <h1 className={`text-3xl md:text-4xl font-medium mb-4 leading-tight ${isReadingMode ? "text-[#ededed]" : ""}`}>
               {blog.title}
             </h1>
             <div className={`flex items-center gap-3 text-xs mono ${isReadingMode ? "text-[#555]" : "text-muted-foreground"}`}>
