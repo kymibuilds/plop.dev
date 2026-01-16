@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
 
 function NavItem({ href, label, shortcut }: { href: string; label: string; shortcut: string }) {
   return (
@@ -14,6 +15,50 @@ function NavItem({ href, label, shortcut }: { href: string; label: string; short
         g {shortcut}
       </span>
     </Link>
+  );
+}
+
+function ShortcutsAccordion() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const shortcuts = [
+    { key: "a", label: "new" },
+    { key: "e", label: "edit" },
+    { key: "j/k", label: "navigate" },
+    { key: "↵", label: "expand" },
+    { key: "?", label: "help" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between group py-0.5 hover:bg-muted/50 -mx-2 px-2 transition-colors w-[calc(100%+1rem)]"
+      >
+        <span className="flex items-center gap-2 group-hover:underline">
+          <Keyboard className="w-3 h-3 text-muted-foreground" />
+          <span>shortcuts</span>
+        </span>
+        {isOpen ? (
+          <ChevronDown className="w-3 h-3 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="w-3 h-3 text-muted-foreground" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="flex flex-col gap-1 pl-4 pr-1 py-1 text-xs text-muted-foreground animate-in slide-in-from-top-1 duration-200">
+          {shortcuts.map((s) => (
+            <div key={s.key} className="flex items-center justify-between">
+              <span>{s.label}</span>
+              <span className="mono bg-muted/60 px-1 rounded text-[10px] min-w-[1.2rem] text-center border border-border/50">
+                {s.key}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -65,6 +110,7 @@ export default function Navbar() {
           <DisabledNavItem label="products" />
           <DisabledNavItem label="sponsors" />
           <DisabledNavItem label="integrations" />
+          <ShortcutsAccordion />
         </nav>
 
         {/* Footer */}
