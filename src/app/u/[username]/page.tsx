@@ -168,7 +168,7 @@ export default async function PublicProfilePage({ params }: Props) {
         {showBlogs && userBlogs.length > 0 && (
           <section className="flex flex-col gap-4 items-center">
             <h2 className="mono text-xs text-muted-foreground">［ blogs ］</h2>
-            <div className="flex flex-col gap-2 items-center">
+            <div className="flex flex-col gap-2 items-center w-full">
               {userBlogs.map((blog) => {
                 const isExternal = blog.isExternal;
                 const href = isExternal
@@ -182,14 +182,14 @@ export default async function PublicProfilePage({ params }: Props) {
                     href={href}
                     target={target}
                     rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="group flex items-center gap-2 hover:underline cursor-pointer transition-all"
+                    className="group flex items-center justify-center gap-1.5 cursor-pointer transition-all w-full relative"
                   >
-                    <span className="text-muted-foreground text-xs">•</span>
-                    <span>{blog.title}</span>
+                    <span className="text-muted-foreground text-[10px] no-underline">•</span>
+                    <span className="group-hover:underline underline-offset-4 decoration-muted-foreground/50">{blog.title}</span>
                     {isExternal ? (
-                      <span className="text-[9px] text-muted-foreground -mt-1">↗</span>
+                      <span className="text-[9px] text-muted-foreground -mt-1 no-underline">↗</span>
                     ) : (
-                      <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs">→</span>
+                      <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs no-underline translate-x-[-4px] group-hover:translate-x-0 duration-200">→</span>
                     )}
                   </a>
                 );
