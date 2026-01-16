@@ -17,6 +17,17 @@ function NavItem({ href, label, shortcut }: { href: string; label: string; short
   );
 }
 
+function DisabledNavItem({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-between py-0.5 -mx-2 px-2 cursor-not-allowed opacity-50">
+      <span className="line-through">{label}</span>
+      <span className="mono text-[9px] text-muted-foreground">
+        soon
+      </span>
+    </div>
+  );
+}
+
 
 export default function Navbar() {
   const router = useRouter();
@@ -51,9 +62,9 @@ export default function Navbar() {
           <NavItem href="/links" label="links" shortcut="l" />
           <NavItem href="/analytics" label="analytics" shortcut="a" />
           <NavItem href="/blogs" label="blogs" shortcut="b" />
-          <NavItem href="/products" label="products" shortcut="p" />
-          <NavItem href="/sponsors" label="sponsors" shortcut="s" />
-          <NavItem href="/integrations" label="integrations" shortcut="i" />
+          <DisabledNavItem label="products" />
+          <DisabledNavItem label="sponsors" />
+          <DisabledNavItem label="integrations" />
         </nav>
 
         {/* Footer */}

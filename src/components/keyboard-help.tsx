@@ -7,10 +7,7 @@ const shortcuts = [
     { keys: ["h"], desc: "Home" },
     { keys: ["l"], desc: "Links" },
     { keys: ["b"], desc: "Blogs" },
-    { keys: ["p"], desc: "Products" },
     { keys: ["a"], desc: "Analytics" },
-    { keys: ["s"], desc: "Sponsors" },
-    { keys: ["i"], desc: "Integrations" },
   ]},
   { category: "Command", items: [
     { keys: [":"], desc: "Command palette" },

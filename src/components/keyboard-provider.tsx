@@ -93,10 +93,7 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
           case "h": preventAndHandle(() => router.push("/")); break;
           case "l": preventAndHandle(() => router.push("/links")); break;
           case "b": preventAndHandle(() => router.push("/blogs")); break;
-          case "p": preventAndHandle(() => router.push("/products")); break;
           case "a": preventAndHandle(() => router.push("/analytics")); break;
-          case "s": preventAndHandle(() => router.push("/sponsors")); break;
-          case "i": preventAndHandle(() => router.push("/integrations")); break;
         }
         return;
       }

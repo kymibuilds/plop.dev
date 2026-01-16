@@ -22,10 +22,7 @@ export function CommandPalette() {
     { id: "home", label: "Go to Home", shortcut: "g h", action: () => router.push("/") },
     { id: "links", label: "Go to Links", shortcut: "g l", action: () => router.push("/links") },
     { id: "blogs", label: "Go to Blogs", shortcut: "g b", action: () => router.push("/blogs") },
-    { id: "products", label: "Go to Products", shortcut: "g p", action: () => router.push("/products") },
     { id: "analytics", label: "Go to Analytics", shortcut: "g a", action: () => router.push("/analytics") },
-    { id: "sponsors", label: "Go to Sponsors", shortcut: "g s", action: () => router.push("/sponsors") },
-    { id: "integrations", label: "Go to Integrations", shortcut: "g i", action: () => router.push("/integrations") },
     { id: "help", label: "Show Keyboard Shortcuts", shortcut: "?", action: () => {} },
   ];
 

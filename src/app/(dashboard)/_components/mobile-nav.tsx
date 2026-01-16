@@ -27,6 +27,17 @@ function NavItem({ href, label, shortcut, onClick }: NavItemProps) {
   );
 }
 
+function DisabledNavItem({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-between py-2 px-2 cursor-not-allowed opacity-50">
+      <span className="text-sm font-medium line-through">{label}</span>
+      <span className="mono text-[9px] text-muted-foreground">
+        soon
+      </span>
+    </div>
+  );
+}
+
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
@@ -94,9 +105,9 @@ export function MobileNav() {
             <NavItem href="/links" label="links" shortcut="g l" onClick={() => setIsOpen(false)} />
             <NavItem href="/analytics" label="analytics" shortcut="g a" onClick={() => setIsOpen(false)} />
             <NavItem href="/blogs" label="blogs" shortcut="g b" onClick={() => setIsOpen(false)} />
-            <NavItem href="/products" label="products" shortcut="g p" onClick={() => setIsOpen(false)} />
-            <NavItem href="/sponsors" label="sponsors" shortcut="g s" onClick={() => setIsOpen(false)} />
-            <NavItem href="/integrations" label="integrations" shortcut="g i" onClick={() => setIsOpen(false)} />
+            <DisabledNavItem label="products" />
+            <DisabledNavItem label="sponsors" />
+            <DisabledNavItem label="integrations" />
           </nav>
 
           {/* Footer */}
