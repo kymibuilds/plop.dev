@@ -4,6 +4,34 @@ import { links } from "@/db/schema";
 import { validateRequest } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 
+// PUT: Update a link by ID
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { user } = await validateRequest();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const body = await request.json();
+  const { name, url } = body;
+
+  const [updated] = await db
+    .update(links)
+    .set({ name, url })
+    .where(and(eq(links.id, id), eq(links.userId, user.id)))
+    .returning();
+
+  if (!updated) {
+    return NextResponse.json({ error: "Link not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(updated);
+}
+
 // DELETE: Delete a link by ID
 export async function DELETE(
   request: NextRequest,
@@ -29,3 +57,4 @@ export async function DELETE(
 
   return NextResponse.json({ success: true });
 }
+

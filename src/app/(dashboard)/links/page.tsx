@@ -17,26 +17,68 @@ export default function LinksPage() {
   const [newName, setNewName] = useState("");
   const [newUrl, setNewUrl] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editUrl, setEditUrl] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
   const { registerAction, unregisterAction } = useKeyboard();
 
   // Register keyboard actions
   useEffect(() => {
-    registerAction("down", () => setFocusedIndex((i) => Math.min(i + 1, links.length - 1)));
-    registerAction("up", () => setFocusedIndex((i) => Math.max(i - 1, 0)));
-    registerAction("new", () => setIsAdding(true));
+    registerAction("down", () => {
+      if (editingId) return;
+      setFocusedIndex((i) => Math.min(i + 1, links.length - 1));
+    });
+    registerAction("up", () => {
+      if (editingId) return;
+      setFocusedIndex((i) => Math.max(i - 1, 0));
+    });
+    registerAction("new", () => {
+      if (editingId) return;
+      setIsAdding(true);
+    });
+    registerAction("edit", () => {
+      if (editingId) return;
+      const link = links[focusedIndex];
+      if (link) {
+        setEditingId(link.id);
+        setEditName(link.name);
+        setEditUrl(link.url);
+      }
+    });
+    registerAction("select", () => {
+      if (editingId) return;
+      const link = links[focusedIndex];
+      if (link) {
+        setEditingId(link.id);
+        setEditName(link.name);
+        setEditUrl(link.url);
+      }
+    });
     registerAction("delete", () => {
+      if (editingId) return;
       const link = links[focusedIndex];
       if (link && window.confirm(`Delete "${link.name}"?`)) handleDelete(link.id);
+    });
+    registerAction("cancel", () => {
+      setIsAdding(false);
+      setEditingId(null);
+      setNewName("");
+      setNewUrl("");
     });
 
     return () => {
       unregisterAction("down");
       unregisterAction("up");
       unregisterAction("new");
+      unregisterAction("edit");
+      unregisterAction("select");
       unregisterAction("delete");
+      unregisterAction("cancel");
     };
-  }, [links, focusedIndex, registerAction, unregisterAction]);
+  }, [links, focusedIndex, editingId, registerAction, unregisterAction]);
+
+
 
   // Fetch links on mount
   useEffect(() => {
@@ -109,11 +151,51 @@ export default function LinksPage() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!editingId || !editName || !editUrl) return;
+
+    try {
+      const res = await fetch(`/api/links/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: editName, url: editUrl }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setLinks(links.map((l) => (l.id === editingId ? updated : l)));
+        setEditingId(null);
+      }
+    } catch (error) {
+      console.error("Failed to update link:", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditUrl("");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleAdd();
+    } else if (e.key === "Escape") {
+      setIsAdding(false);
+      setNewName("");
+      setNewUrl("");
     }
   };
+
+
+  const handleEditKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleEdit();
+    } else if (e.key === "Escape") {
+      handleCancelEdit();
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -178,34 +260,90 @@ export default function LinksPage() {
         )}
 
         {/* Links List */}
-        {links.map((link, index) => (
-          <div
-            key={link.id}
-            className={`flex items-center justify-between p-3 border bg-card/50 group transition-all ${
-              index === focusedIndex 
-                ? "border-l-2 border-l-foreground border-border" 
-                : "border-border"
-            }`}
-          >
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium">{link.name}</span>
-              <span className="text-[10px] text-muted-foreground mono">{link.url}</span>
+        {links.map((link, index) => {
+          const isEditing = editingId === link.id;
+          
+          return (
+            <div
+              key={link.id}
+              className={`flex items-center justify-between p-3 border bg-card/50 group transition-all ${
+                index === focusedIndex && !isEditing
+                  ? "border-l-2 border-l-foreground border-border" 
+                  : "border-border"
+              }`}
+            >
+              {isEditing ? (
+                // Edit Mode
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-1 flex flex-col gap-2">
+                    <input
+                      autoFocus
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={handleEditKeyDown}
+                      className="text-sm font-medium bg-transparent border-b border-foreground outline-none"
+                      placeholder="name"
+                    />
+                    <input
+                      type="text"
+                      value={editUrl}
+                      onChange={(e) => setEditUrl(e.target.value)}
+                      onKeyDown={handleEditKeyDown}
+                      className="text-[10px] text-muted-foreground mono bg-transparent border-b border-border outline-none"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleEdit}
+                      className="text-xs bg-foreground text-background px-2 py-1 hover:opacity-90"
+                    >
+                      save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View Mode
+                <>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium">{link.name}</span>
+                    <span className="text-[10px] text-muted-foreground mono">{link.url}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[10px] mono text-muted-foreground">{link.clicks} clicks</span>
+                    <div className="flex gap-3 text-xs opacity-50 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => {
+                          setEditingId(link.id);
+                          setEditName(link.name);
+                          setEditUrl(link.url);
+                        }}
+                        className="hover:text-foreground text-muted-foreground"
+                      >
+                        edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(link.id)}
+                        className="hover:text-red-500 text-muted-foreground"
+                      >
+                        del
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-[10px] mono text-muted-foreground">{link.clicks} clicks</span>
-              <div className="flex gap-3 text-xs opacity-50 group-hover:opacity-100 transition-opacity">
-                <button className="hover:text-foreground text-muted-foreground">edit</button>
-                <button
-                  onClick={() => handleDelete(link.id)}
-                  className="hover:text-red-500 text-muted-foreground"
-                >
-                  del
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
+

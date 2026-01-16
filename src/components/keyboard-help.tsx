@@ -21,7 +21,7 @@ const shortcuts = [
     { keys: ["j"], desc: "Move down" },
     { keys: ["k"], desc: "Move up" },
     { keys: ["↵"], desc: "Open / Select" },
-    { keys: ["n"], desc: "New" },
+    { keys: ["a", "n"], desc: "New" },
     { keys: ["e"], desc: "Edit" },
     { keys: ["d"], desc: "Delete" },
   ]},

@@ -66,6 +66,7 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
         setMode("normal");
         setShowHelp(false);
         setShowCommandPalette(false);
+        customActions["cancel"]?.();
         return;
       }
 
@@ -122,6 +123,7 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
           preventAndHandle(() => customActions["select"]?.());
           break;
         case "n":
+        case "a":
           preventAndHandle(() => customActions["new"]?.());
           break;
         case "e":

@@ -65,6 +65,14 @@ export default function BlogsPage() {
       const blog = blogs[focusedIndex];
       if (blog && !blog.isExternal) setEditingBlog(blog);
     });
+    registerAction("cancel", () => {
+      setIsAdding(false);
+      setPendingDeleteId(null);
+      setNewTitle("");
+      setNewSlug("");
+      setNewDescription("");
+      setNewExternalUrl("");
+    });
 
     return () => {
       unregisterAction("down");
@@ -73,8 +81,10 @@ export default function BlogsPage() {
       unregisterAction("edit");
       unregisterAction("delete");
       unregisterAction("select");
+      unregisterAction("cancel");
     };
   }, [blogs, focusedIndex, pendingDeleteId, registerAction, unregisterAction]);
+
 
   // Handle y/n for delete confirmation
   useEffect(() => {
@@ -235,6 +245,16 @@ export default function BlogsPage() {
     }
   };
 
+  const handleAddKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsAdding(false);
+      setNewTitle("");
+      setNewSlug("");
+      setNewDescription("");
+      setNewExternalUrl("");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full max-w-md mx-auto py-16 px-6 flex items-center justify-center">
@@ -278,6 +298,7 @@ export default function BlogsPage() {
                 className="text-sm font-medium bg-transparent border-b border-border outline-none placeholder:text-muted-foreground/50 pb-1"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
+                onKeyDown={handleAddKeyDown}
               />
               
               {addMode === "post" ? (
@@ -287,6 +308,7 @@ export default function BlogsPage() {
                   className="text-xs mono bg-transparent border-b border-border outline-none placeholder:text-muted-foreground/50 pb-1 text-muted-foreground"
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value)}
+                  onKeyDown={handleAddKeyDown}
                 />
               ) : (
                 <input
@@ -295,6 +317,7 @@ export default function BlogsPage() {
                   className="text-xs mono bg-transparent border-b border-border outline-none placeholder:text-muted-foreground/50 pb-1 text-muted-foreground"
                   value={newExternalUrl}
                   onChange={(e) => setNewExternalUrl(e.target.value)}
+                  onKeyDown={handleAddKeyDown}
                 />
               )}
 
@@ -304,6 +327,7 @@ export default function BlogsPage() {
                 className="text-xs bg-transparent border-b border-border outline-none placeholder:text-muted-foreground/50 pb-1 text-muted-foreground resize-none"
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
+                onKeyDown={handleAddKeyDown}
               />
             </div>
             <div className="flex justify-end pt-2">
