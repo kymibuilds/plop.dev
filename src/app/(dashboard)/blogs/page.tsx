@@ -458,7 +458,7 @@ export default function BlogsPage() {
           >
             {/* Delete Confirmation Overlay */}
             {isPendingDelete && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-[1px] z-10 gap-3 animate-in fade-in duration-200">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-[1px] z-10 gap-3 animate-in fade-in duration-200 px-6 text-center">
                 <span className="text-sm text-destructive font-medium">delete "{blog.title}"?</span>
                 <div className="flex items-center gap-6 text-xs mono text-muted-foreground">
                   <div 
@@ -483,8 +483,8 @@ export default function BlogsPage() {
             )}
 
             <div className="flex justify-between items-start gap-2">
-              <div className="flex flex-col items-center text-center flex-1 min-w-0">
-                <div className="flex items-center gap-2 justify-center max-w-full">
+              <div className="flex flex-col items-start text-start flex-1 min-w-0">
+                <div className="flex items-center gap-2 max-w-full">
                   <span className="font-medium text-sm truncate">{blog.title}</span>
                   {/* Hover arrow */}
                   <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs flex-shrink-0">→</span>

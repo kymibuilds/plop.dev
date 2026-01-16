@@ -17,9 +17,7 @@ export default function LinksPage() {
   const [newName, setNewName] = useState("");
   const [newUrl, setNewUrl] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editUrl, setEditUrl] = useState("");
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const { registerAction, unregisterAction } = useKeyboard();
 
@@ -28,33 +26,34 @@ export default function LinksPage() {
     links,
     focusedIndex,
     editingId,
+    pendingDeleteId,
     isAdding
   });
 
   useEffect(() => {
-    stateRef.current = { links, focusedIndex, editingId, isAdding };
-  }, [links, focusedIndex, editingId, isAdding]);
+    stateRef.current = { links, focusedIndex, editingId, pendingDeleteId, isAdding };
+  }, [links, focusedIndex, editingId, pendingDeleteId, isAdding]);
 
   // Register keyboard actions - ONCE on mount
   useEffect(() => {
     registerAction("down", () => {
-      const { editingId, links, focusedIndex } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId, links, focusedIndex } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       setFocusedIndex(Math.min(focusedIndex + 1, links.length - 1));
     });
     registerAction("up", () => {
-      const { editingId, focusedIndex } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId, focusedIndex } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       setFocusedIndex(Math.max(focusedIndex - 1, 0));
     });
     registerAction("new", () => {
-      const { editingId } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       setIsAdding(true);
     });
     registerAction("edit", () => {
-      const { editingId, links, focusedIndex } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId, links, focusedIndex } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       const link = links[focusedIndex];
       if (link) {
         setEditingId(link.id);
@@ -63,8 +62,8 @@ export default function LinksPage() {
       }
     });
     registerAction("select", () => {
-      const { editingId, links, focusedIndex } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId, links, focusedIndex } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       const link = links[focusedIndex];
       if (link) {
         setEditingId(link.id);
@@ -73,24 +72,17 @@ export default function LinksPage() {
       }
     });
     registerAction("delete", () => {
-      const { editingId, links, focusedIndex } = stateRef.current;
-      if (editingId) return;
+      const { editingId, pendingDeleteId, links, focusedIndex } = stateRef.current;
+      if (editingId || pendingDeleteId) return;
       const link = links[focusedIndex];
-      // Note: We need to pass the ID to delete, but handleDelete isn't stable either if not memoized.
-      // However, since we are calling it from here, we can just access the current link and call the function.
-      // We'll wrap handleDelete in a ref or just rely on the closure if we weren't unmounting/remounting.
-      // But we ARE running this effect once. So we need a stable way to call things.
-      // Easiest is to put handlers in a ref too or just use the stateRef pattern for data.
-      if (link && window.confirm(`Delete "${link.name}"?`)) {
-        // We'll dispatch a custom event or just call a stable method relative to this scope?
-        // Actually, we can't easily call 'handleDelete' from here if it's not stable.
-        // Let's make a stable ref for handlers.
-        handlersRef.current.handleDelete(link.id);
+      if (link) {
+        setPendingDeleteId(link.id);
       }
     });
     registerAction("cancel", () => {
       setIsAdding(false);
       setEditingId(null);
+      setPendingDeleteId(null);
       setNewName("");
       setNewUrl("");
     });
@@ -106,6 +98,25 @@ export default function LinksPage() {
     };
   }, [registerAction, unregisterAction]);
 
+  // Handle y/n for delete confirmation
+  useEffect(() => {
+    if (!pendingDeleteId) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        handleDelete(pendingDeleteId);
+        setPendingDeleteId(null);
+      } else if (e.key.toLowerCase() === "n" || e.key === "Escape") {
+        e.preventDefault();
+        setPendingDeleteId(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [pendingDeleteId]);
+
   // Stable handlers ref
   const handlersRef = useRef({ handleDelete: (id: string) => {} });
   
@@ -115,6 +126,7 @@ export default function LinksPage() {
       const res = await fetch(`/api/links/${id}`, { method: "DELETE" });
       if (res.ok) {
         setLinks(prev => prev.filter((link) => link.id !== id));
+        setPendingDeleteId(null);
       }
     } catch (error) {
       console.error("Failed to delete link:", error);
@@ -298,16 +310,42 @@ export default function LinksPage() {
         {/* Links List */}
         {links.map((link, index) => {
           const isEditing = editingId === link.id;
+          const isPendingDelete = pendingDeleteId === link.id;
           
           return (
             <div
               key={link.id}
-              className={`flex items-center justify-between p-3 border bg-card/50 group transition-all ${
-                index === focusedIndex && !isEditing
+              className={`relative flex items-center justify-between p-3 border bg-card/50 group transition-all ${
+                index === focusedIndex && !isEditing && !isPendingDelete
                   ? "border-l-2 border-l-foreground border-border" 
                   : "border-border"
-              }`}
+              } ${isPendingDelete ? "border-red-500 bg-red-500/5" : ""}`}
             >
+              {isPendingDelete && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-[1px] z-10 gap-2 animate-in fade-in duration-200">
+                  <span className="text-sm text-destructive font-medium">delete "{link.name}"?</span>
+                  <div className="flex items-center gap-6 text-xs mono text-muted-foreground">
+                    <div 
+                      className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors group/btn"
+                      onClick={() => {
+                          handleDelete(link.id);
+                          setPendingDeleteId(null);
+                      }}
+                    >
+                      <kbd className="min-w-[20px] h-5 flex items-center justify-center bg-background border border-border rounded text-[10px] group-hover/btn:border-foreground/50 transition-colors">y</kbd>
+                      <span>verify</span>
+                    </div>
+                    <div 
+                      className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors group/btn"
+                      onClick={() => setPendingDeleteId(null)}
+                    >
+                      <kbd className="min-w-[20px] h-5 flex items-center justify-center bg-background border border-border rounded text-[10px] group-hover/btn:border-foreground/50 transition-colors">n</kbd>
+                      <span>cancel</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {isEditing ? (
                 // Edit Mode
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
@@ -366,7 +404,7 @@ export default function LinksPage() {
                         edit
                       </button>
                       <button
-                        onClick={() => handleDelete(link.id)}
+                        onClick={() => setPendingDeleteId(link.id)}
                         className="hover:text-red-500 text-muted-foreground"
                       >
                         del
