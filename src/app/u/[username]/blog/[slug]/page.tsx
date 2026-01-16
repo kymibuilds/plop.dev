@@ -36,6 +36,22 @@ export default function UserBlogPage() {
       .finally(() => setIsLoading(false));
   }, [username, slug]);
 
+  const [isReadingMode, setIsReadingMode] = useState(false);
+
+  // Initialize reading mode from localStorage
+  useEffect(() => {
+    const savedMode = localStorage.getItem("plob-reading-mode");
+    if (savedMode === "true") {
+      setIsReadingMode(true);
+    }
+  }, []);
+
+  const toggleReadingMode = () => {
+    const newMode = !isReadingMode;
+    setIsReadingMode(newMode);
+    localStorage.setItem("plob-reading-mode", String(newMode));
+  };
+
   if (isLoading) {
     return (
       <main className="w-full min-h-screen flex items-center justify-center">
@@ -55,26 +71,85 @@ export default function UserBlogPage() {
   }
 
   return (
-    <main className="w-full min-h-screen px-6 py-16">
-      <article className="max-w-2xl mx-auto">
-        {/* Header */}
-        <header className="mb-8">
-          <a href="/" className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-block">
-            ← back
-          </a>
-          <h1 className="text-2xl font-medium mb-2">{blog.title}</h1>
-          <div className="flex items-center gap-3 text-xs mono text-muted-foreground">
-            <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-            <span>•</span>
-            <span>{blog.views} views</span>
-          </div>
-        </header>
+    <main 
+      className={`min-h-screen w-full transition-colors duration-500 ease-in-out ${
+        isReadingMode ? "bg-[#111111] text-[#a1a1aa]" : "bg-background text-foreground"
+      }`}
+    >
+      {/* Toggle Button */}
+      <button
+        onClick={toggleReadingMode}
+        className="fixed top-6 right-6 z-50 p-2 rounded-full hover:bg-muted/20 transition-colors"
+        title={isReadingMode ? "Switch to Default" : "Soft Reading Mode"}
+      >
+        {isReadingMode ? (
+          <span className="text-lg">☀</span>
+        ) : (
+          <span className="text-lg opacity-50 hover:opacity-100">☾</span>
+        )}
+      </button>
 
-        {/* Content */}
-        <div className="border-t border-border pt-8">
-          <MarkdownPreview content={blog.content || ""} />
-        </div>
-      </article>
+      {/* Main Content Container with Borders */}
+      <div className="max-w-4xl mx-auto min-h-screen flex">
+        
+        {/* Left Border */}
+        <div 
+          className={`w-4 md:w-8 flex-shrink-0 transition-all duration-500 ${
+            isReadingMode 
+              ? "border-r border-[#333]" 
+              : "border-r border-transparent"
+          }`}
+          style={
+            !isReadingMode ? {
+              backgroundImage: "repeating-linear-gradient(45deg, #e5e5e5 0px, #e5e5e5 1px, transparent 1px, transparent 6px)",
+              backgroundSize: "8px 8px"
+            } : {}
+          }
+        />
+
+        <article className={`flex-1 px-6 md:px-12 py-16 max-w-2xl mx-auto transition-opacity duration-500 ${isReadingMode ? "opacity-90" : "opacity-100"}`}>
+          {/* Header */}
+          <header className="mb-12">
+            <a 
+              href={`/u/${username}`}
+              className={`text-xs mono mb-6 inline-block hover:underline transition-colors ${
+                isReadingMode ? "text-[#666] hover:text-[#888]" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              ← {username}
+            </a>
+            <h1 className={`text-3xl md:text-4xl font-medium mb-4 leading-tight ${isReadingMode ? "text-[#e5e5e5]" : ""}`}>
+              {blog.title}
+            </h1>
+            <div className={`flex items-center gap-3 text-xs mono ${isReadingMode ? "text-[#555]" : "text-muted-foreground"}`}>
+              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+              <span>•</span>
+              <span>{blog.views} views</span>
+            </div>
+          </header>
+
+          {/* Content */}
+          <div className={`${isReadingMode ? "prose-invert prose-neutral" : ""} prose prose-sm md:prose-base max-w-none`}>
+            <MarkdownPreview content={blog.content || ""} />
+          </div>
+        </article>
+
+        {/* Right Border */}
+        <div 
+          className={`w-4 md:w-8 flex-shrink-0 transition-all duration-500 ${
+            isReadingMode 
+              ? "border-l border-[#333]" 
+              : "border-l border-transparent"
+          }`}
+          style={
+            !isReadingMode ? {
+              backgroundImage: "repeating-linear-gradient(-45deg, #e5e5e5 0px, #e5e5e5 1px, transparent 1px, transparent 6px)",
+              backgroundSize: "8px 8px"
+            } : {}
+          }
+        />
+        
+      </div>
     </main>
   );
 }
