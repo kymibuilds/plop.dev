@@ -156,6 +156,7 @@ export function MarkdownEditor({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        spellCheck={true}
         className="w-full p-4 bg-transparent resize-none outline-none mono text-sm leading-relaxed placeholder:text-muted-foreground/50"
         style={{ minHeight }}
       />

@@ -225,14 +225,28 @@ export default function BlogsPage() {
     }
   };
 
+  const [publishError, setPublishError] = useState<string | null>(null);
+
   const handleSetPublish = async (id: string, shouldPublish: boolean) => {
-    // Check limit if publishing
+    // Clear any previous error
+    setPublishError(null);
+
+    // Check if blog has content before publishing
     if (shouldPublish) {
-      const currentPublishedCount = blogs.filter(b => b.published).length;
       const targetBlog = blogs.find(b => b.id === id);
-      // If we are publishing a draft, and we are at or over limit
+      
+      // Check for empty content
+      if (!targetBlog?.content || targetBlog.content.trim() === "") {
+        setPublishError("cannot publish an empty blog. add some content first.");
+        setTimeout(() => setPublishError(null), 4000);
+        return;
+      }
+
+      // Check limit if publishing
+      const currentPublishedCount = blogs.filter(b => b.published).length;
       if (!targetBlog?.published && currentPublishedCount >= 5) {
-        window.alert("Limit reached: You can only have 5 active blogs at a time.");
+        setPublishError("limit reached: you can only have 5 active blogs at a time.");
+        setTimeout(() => setPublishError(null), 4000);
         return;
       }
     }
@@ -318,6 +332,13 @@ export default function BlogsPage() {
           </button>
         </div>
       </div>
+
+      {/* Error Message */}
+      {publishError && (
+        <div className="text-sm text-red-500 bg-red-500/10 px-3 py-2 border border-red-500/20 animate-in fade-in slide-in-from-top-1 duration-200">
+          {publishError}
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
         {/* Add Form */}
@@ -431,14 +452,14 @@ export default function BlogsPage() {
               </div>
             )}
 
-            <div className="flex justify-between items-start">
-              <div className="flex flex-col items-center text-center flex-1 mr-4">
-                <div className="flex items-center gap-2 justify-center">
-                  <span className="font-medium text-sm">{blog.title}</span>
+            <div className="flex justify-between items-start gap-2">
+              <div className="flex flex-col items-center text-center flex-1 min-w-0">
+                <div className="flex items-center gap-2 justify-center max-w-full">
+                  <span className="font-medium text-sm truncate">{blog.title}</span>
                   {/* Hover arrow */}
-                  <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs">→</span>
+                  <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity text-xs flex-shrink-0">→</span>
                   {blog.isExternal && (
-                    <span className="text-[10px] bg-muted text-muted-foreground px-1 py-0.5 rounded-sm">
+                    <span className="text-[10px] bg-muted text-muted-foreground px-1 py-0.5 rounded-sm flex-shrink-0">
                       link
                     </span>
                   )}
@@ -448,12 +469,13 @@ export default function BlogsPage() {
                     href={blog.externalUrl || "#"} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="mono text-[10px] text-muted-foreground hover:underline truncate max-w-[200px]"
+                    className="mono text-[10px] text-muted-foreground hover:underline truncate max-w-full block"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {blog.externalUrl} ↗
                   </a>
                 ) : (
-                  <span className="mono text-[10px] text-muted-foreground">/{blog.slug}</span>
+                  <span className="mono text-[10px] text-muted-foreground truncate max-w-full">/{blog.slug}</span>
                 )}
               </div>
               <button

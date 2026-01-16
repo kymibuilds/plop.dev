@@ -139,7 +139,7 @@ export default async function PublicProfilePage({ params }: Props) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:underline cursor-pointer"
+                      className="hover:underline cursor-pointer truncate max-w-[150px] inline-block align-bottom"
                     >
                       {link.name}
                     </a>
@@ -147,14 +147,14 @@ export default async function PublicProfilePage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-full max-w-xs">
                 {userLinks.map((link) => (
                   <a
                     key={link.id}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:underline cursor-pointer"
+                    className="hover:underline cursor-pointer truncate"
                   >
                     {link.name}
                   </a>
@@ -182,10 +182,10 @@ export default async function PublicProfilePage({ params }: Props) {
                     href={href}
                     target={target}
                     rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="group flex items-center justify-center gap-1.5 cursor-pointer transition-all w-full relative"
+                    className="group flex items-center justify-center gap-1.5 cursor-pointer transition-all w-full relative max-w-xs"
                   >
-                    <span className="text-muted-foreground text-[10px] no-underline">•</span>
-                    <span className="group-hover:underline underline-offset-4 decoration-muted-foreground/50">{blog.title}</span>
+                    <span className="text-muted-foreground text-[10px] no-underline flex-shrink-0">•</span>
+                    <span className="group-hover:underline underline-offset-4 decoration-muted-foreground/50 truncate">{blog.title}</span>
                     {isExternal ? (
                       <span className="text-[9px] text-muted-foreground -mt-1 no-underline">↗</span>
                     ) : (
@@ -204,7 +204,7 @@ export default async function PublicProfilePage({ params }: Props) {
             <h2 className="mono text-xs text-muted-foreground">
               ［ products ］
             </h2>
-            <div className="grid grid-cols-3 gap-2 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
               {userProducts.map((product) => (
                 <a
                   key={product.id}
